@@ -93,7 +93,7 @@ public class VelocityPluginManager implements PluginManager {
           boolean applyUpdates
   ) throws IOException {
     checkNotNull(pluginDirectory, "directory");
-    checkArgument(pluginDirectory.toFile().isDirectory(), "provided plugin path isn't a directory");
+    checkArgument(Files.isDirectory(pluginDirectory), "provided plugin path isn't a directory");
 
     Map<String, PluginDescription> found = new HashMap<>();
     JavaPluginLoader loader = new JavaPluginLoader(server, pluginDirectory);
@@ -118,9 +118,9 @@ public class VelocityPluginManager implements PluginManager {
     //update plugins from update folder before checking for dependencies and making sorted dependency list
     if (applyUpdates) {
       checkNotNull(updateDirectory, "updateDirectory");
-      checkArgument(updateDirectory.toFile().isDirectory(), "provided update path isn't a directory");
+      checkArgument(Files.isDirectory(updateDirectory), "provided update path isn't a directory");
       checkNotNull(outdatedPluginDirectory, "outdatedPluginDirectory");
-      checkArgument(outdatedPluginDirectory.toFile().isDirectory(), "provided outdated plugin path isn't a directory");
+      checkArgument(Files.isDirectory(outdatedPluginDirectory), "provided outdated plugin path isn't a directory");
       List<PluginDescription> updatesToApply = new ArrayList<>();
       JavaPluginLoader updateLoader = new JavaPluginLoader(server, updateDirectory);
       try (DirectoryStream<Path> stream = Files.newDirectoryStream(updateDirectory,
@@ -138,7 +138,7 @@ public class VelocityPluginManager implements PluginManager {
       for (PluginDescription updatedDescription : updatesToApply) {
         PluginDescription possibleMatch = found.get(updatedDescription.getId());
         if (updatedDescription.getSource().isEmpty()) { //should not happen but just in case
-          logger.warn("");
+          logger.warn("No source found for plugin {} found", updatedDescription.getId());
           continue;
         }
         Path oldPluginPath = null;
