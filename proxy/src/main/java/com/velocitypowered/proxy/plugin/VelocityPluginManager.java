@@ -115,12 +115,14 @@ public class VelocityPluginManager implements PluginManager {
       return;
     }
 
-    //update plugins from update folder before checking for dependencies and making sorted dependency list
+    // update plugins from update folder before checking
+    // for dependencies and making sorted dependency list
     if (applyUpdates) {
       checkNotNull(updateDirectory, "updateDirectory");
       checkArgument(Files.isDirectory(updateDirectory), "provided update path isn't a directory");
       checkNotNull(outdatedPluginDirectory, "outdatedPluginDirectory");
-      checkArgument(Files.isDirectory(outdatedPluginDirectory), "provided outdated plugin path isn't a directory");
+      checkArgument(Files.isDirectory(outdatedPluginDirectory),
+              "provided outdated plugin path isn't a directory");
       List<PluginDescription> updatesToApply = new ArrayList<>();
       JavaPluginLoader updateLoader = new JavaPluginLoader(server, updateDirectory);
       try (DirectoryStream<Path> stream = Files.newDirectoryStream(updateDirectory,
@@ -134,7 +136,8 @@ public class VelocityPluginManager implements PluginManager {
         }
       }
 
-      //match the to update plugin's id against already loaded plugins and replace them if match found
+      // match the to update plugin's id against already
+      // loaded plugins and replace them if match found
       for (PluginDescription updatedDescription : updatesToApply) {
         PluginDescription possibleMatch = found.get(updatedDescription.getId());
         if (updatedDescription.getSource().isEmpty()) { //should not happen but just in case
@@ -144,7 +147,8 @@ public class VelocityPluginManager implements PluginManager {
         Path oldPluginPath = null;
         if (possibleMatch != null) {
           if (possibleMatch.getSource().isEmpty()) {
-            logger.warn("No source for plugin {} found, continuing without update.", possibleMatch.getId());
+            logger.warn("No source for plugin {} found, continuing without update.",
+                    possibleMatch.getId());
             continue;
           }
           //move old plugin to outdated plugin directory to rollback in case of failure
@@ -179,7 +183,8 @@ public class VelocityPluginManager implements PluginManager {
       }
     }
 
-    List<PluginDescription> sortedPlugins = PluginDependencyUtils.sortCandidates(new ArrayList<>(found.values()));
+    List<PluginDescription> sortedPlugins =
+            PluginDependencyUtils.sortCandidates(new ArrayList<>(found.values()));
     Set<String> loadedPluginsById = new HashSet<>();
     Map<PluginContainer, Module> pluginContainers = new LinkedHashMap<>();
     // Now load the plugins
